@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<paths>
+    <!-- 내부 캐시 경로 -->
+    <cache-path name="internal_cache" path="." />
+    <!-- 외부 캐시 경로 (MainActivity에서 externalCacheDir 사용 중) -->
+    <external-cache-path name="external_cache" path="." />
+    <!-- 내부 파일 경로 -->
+    <files-path name="internal_files" path="." />
+    <!-- 외부 파일 경로 -->
+    <external-files-path name="external_files" path="." />
+</paths>
