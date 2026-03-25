@@ -183,6 +183,10 @@ function bridgeSaveImage(id) {
         const dataUrl = c.toDataURL('image/png');
         if (window.Android && window.Android.saveImage) {
             window.Android.saveImage(dataUrl);
+        } else {
+            // 웹 환경을 위한 다운로드 폴백
+            const a = document.createElement('a'); a.download = `타일산출서_${Date.now()}.png`;
+            a.href = dataUrl; a.click();
         }
     });
 }
@@ -194,6 +198,16 @@ function bridgeShareImage(id) {
         const dataUrl = c.toDataURL('image/png');
         if (window.Android && window.Android.shareImage) {
             window.Android.shareImage(dataUrl);
+        } else {
+            // 웹 환경을 위한 공유 폴백
+            c.toBlob(blob => {
+                const f = new File([blob], 'result.png', {type:'image/png'});
+                if(navigator.share && navigator.canShare({files:[f]})) {
+                    navigator.share({files:[f], title:'타일 물량 산출서'});
+                } else {
+                    alert('공유 기능을 지원하지 않는 브라우저입니다. 이미지를 저장해주세요.');
+                }
+            });
         }
     });
 }
