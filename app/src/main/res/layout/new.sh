@@ -1,2 +1,0 @@
-    git add index.html
-    

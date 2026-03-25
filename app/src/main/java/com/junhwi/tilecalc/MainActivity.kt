@@ -39,12 +39,10 @@ class MainActivity : AppCompatActivity() {
             allowContentAccess = true
         }
         
-        // "Android"라는 이름으로 브릿지 연결
         webView.addJavascriptInterface(WebAppInterface(), "Android")
         
         webView.webViewClient = WebViewClient()
         
-        // 2. WebChromeClient 구현 (JS 팝업 해결)
         webView.webChromeClient = object : WebChromeClient() {
             override fun onJsAlert(view: WebView?, url: String?, message: String?, result: JsResult?): Boolean {
                 AlertDialog.Builder(this@MainActivity)
@@ -79,17 +77,24 @@ class MainActivity : AppCompatActivity() {
                 if (webView.canGoBack()) {
                     webView.goBack()
                 } else {
-                    isEnabled = false
-                    onBackPressedDispatcher.onBackPressed()
+                    showExitDialog()
                 }
             }
         }
         onBackPressedDispatcher.addCallback(this, callback)
     }
 
-    /**
-     * 자바스크립트 브릿지 인터페이스
-     */
+    private fun showExitDialog() {
+        AlertDialog.Builder(this)
+            .setTitle("앱 종료")
+            .setMessage("타일 계산기를 종료하시겠습니까?")
+            .setPositiveButton("종료") { _, _ ->
+                finish()
+            }
+            .setNegativeButton("취소", null)
+            .show()
+    }
+
     inner class WebAppInterface {
 
         @JavascriptInterface
@@ -127,7 +132,6 @@ class MainActivity : AppCompatActivity() {
         fun shareImage(base64Data: String) {
             try {
                 val bitmap = decodeBase64(base64Data)
-                // FileProvider 설정을 위해 외부 캐시 디렉토리 사용
                 val cachePath = File(externalCacheDir, "images")
                 if (!cachePath.exists()) cachePath.mkdirs()
                 
@@ -136,7 +140,6 @@ class MainActivity : AppCompatActivity() {
                 bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream)
                 stream.close()
 
-                // file_paths.xml에 정의된 external-cache-path를 통해 접근
                 val contentUri = FileProvider.getUriForFile(this@MainActivity, "${packageName}.fileprovider", file)
 
                 val intent = Intent(Intent.ACTION_SEND).apply {
