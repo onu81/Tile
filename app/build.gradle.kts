@@ -12,9 +12,9 @@ android {
         applicationId = "com.junhwi.tilecalc"
         minSdk = 24
         targetSdk = 35
-        // 업데이트 인식을 위해 버전을 올립니다.
-        versionCode = 11
-        versionName = "2.0"
+        // 중복 오류를 피하기 위해 버전 코드를 12로 올립니다.
+        versionCode = 12
+        versionName = "2.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
