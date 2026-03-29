@@ -13,3 +13,14 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Firebase 설정 파일 (보안상 깃허브 제외 권장)
+app/google-services.json
+
+# 서명 키 파일 (보안상 깃허브 제외 필수)
+*.jks
+*.keystore
+upload_certificate.pem
+
+# 프로젝트 릴리스 폴더 (APK/AAB 등 빌드 결과물)
+/release
