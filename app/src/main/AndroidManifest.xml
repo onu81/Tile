@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 광고 ID 사용을 위해 필요한 권한을 추가합니다. -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 
     <application
         android:allowBackup="true"
@@ -11,7 +13,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Zzz">
 
-        <!-- 패키지 경로를 포함한 전체 이름을 명시합니다. -->
         <activity
             android:name="com.junhwi.tilecalc.MainActivity"
             android:exported="true">
