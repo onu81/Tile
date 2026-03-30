@@ -56,7 +56,7 @@
     input::placeholder { color: #94a3b8; }
     input:focus { outline: none; background: var(--card); border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
     
-    .area-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .area-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
     .area-block { position: relative; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--input-bg); transition: border-color 0.2s; }
     .area-block:hover { border-color: #94a3b8; }
     .remove-btn { position: absolute; top: -8px; right: -8px; background: var(--error); color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; font-weight: bold; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); transition: transform 0.2s; }
@@ -109,19 +109,14 @@
         </div>
         
         <div id="validationError" class="error-msg">입력값을 다시 확인해주세요. (가로/세로 필수)</div>
-        
-        <!-- 1. [계산 하기] 버튼 추가 -->
-        <button class="btn-main" onclick="calculate()" style="margin-top:12px;">계산 하기</button>
+        <button class="btn-main" onclick="calculate()">물량 산출 및 기록 저장</button>
 
-        <!-- 3. 하단 버튼 디자인 통일 (코발트 블루) -->
-        <div style="display:flex; gap:10px; margin-top:12px;">
-            <button class="btn-main" style="margin-top:0; flex:1;" onclick="bridgeSaveImage('documentSection')">PNG 저장</button>
-            <button class="btn-main" style="margin-top:0; flex:1;" onclick="bridgeShareImage('documentSection')">결과 공유</button>
-        </div>
-
-        <!-- 2. 결과 노출 방식 (계산 하기 버튼을 눌러야만 나타남) -->
         <div id="resultSection" style="display:none; margin-top:24px;">
             <div id="documentSection" class="doc-preview"></div>
+            <div style="display:flex; gap:10px; margin-top:12px;">
+                <button class="btn-sub" style="background:var(--success); color:white; border:none;" onclick="saveImage('documentSection')">PNG 다운로드</button>
+                <button class="btn-sub" onclick="shareResult('documentSection')">결과 공유하기</button>
+            </div>
         </div>
     </div>
 
@@ -174,43 +169,6 @@ window.onload = () => {
     loadTempData();
     renderPresets();
 };
-
-// 안드로이드 브릿지 함수들
-function bridgeSaveImage(id) {
-    const el = document.getElementById(id);
-    if(!el) return;
-    html2canvas(el, {scale:2, backgroundColor:document.body.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff'}).then(c => { 
-        const dataUrl = c.toDataURL('image/png');
-        if (window.Android && window.Android.saveImage) {
-            window.Android.saveImage(dataUrl);
-        } else {
-            // 웹 환경을 위한 다운로드 폴백
-            const a = document.createElement('a'); a.download = `타일산출서_${Date.now()}.png`;
-            a.href = dataUrl; a.click();
-        }
-    });
-}
-
-function bridgeShareImage(id) {
-    const el = document.getElementById(id);
-    if(!el) return;
-    html2canvas(el, {scale:2, backgroundColor:document.body.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff'}).then(c => {
-        const dataUrl = c.toDataURL('image/png');
-        if (window.Android && window.Android.shareImage) {
-            window.Android.shareImage(dataUrl);
-        } else {
-            // 웹 환경을 위한 공유 폴백
-            c.toBlob(blob => {
-                const f = new File([blob], 'result.png', {type:'image/png'});
-                if(navigator.share && navigator.canShare({files:[f]})) {
-                    navigator.share({files:[f], title:'타일 물량 산출서'});
-                } else {
-                    alert('공유 기능을 지원하지 않는 브라우저입니다. 이미지를 저장해주세요.');
-                }
-            });
-        }
-    });
-}
 
 function switchTab(tabId) {
     document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -307,7 +265,7 @@ function calculate() {
     const blocks = document.querySelectorAll('.area-block');
     const errDiv = document.getElementById('validationError');
     
-    if(blocks.length === 0) { errDiv.style.display = 'block'; return false; }
+    if(blocks.length === 0) { errDiv.style.display = 'block'; return; }
 
     let totalAreaM2 = 0, summary = [], isValid = false;
     const globalBoxArea = parseFloat(document.getElementById('boxArea').value) || 1.44;
@@ -340,7 +298,7 @@ function calculate() {
         }
     });
 
-    if(!isValid) { errDiv.style.display = 'block'; return false; }
+    if(!isValid) { errDiv.style.display = 'block'; return; }
     errDiv.style.display = 'none';
 
     const boxAreaM2 = (currentUnit === 'imperial') ? globalBoxArea * 0.092903 : globalBoxArea;
@@ -377,7 +335,6 @@ function calculate() {
     document.getElementById('resultSection').scrollIntoView({behavior:'smooth'});
     
     saveToHistory(projName, totalBoxes, areaDisp, docHtml);
-    return true;
 }
 
 function saveTempData() {
@@ -483,6 +440,30 @@ function toggleTheme() {
     const newT = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     document.body.setAttribute('data-theme', newT);
     localStorage.setItem('onu_platform_theme', newT);
+}
+
+function saveImage(id) {
+    const el = document.getElementById(id);
+    if(!el) return;
+    html2canvas(el, {scale:2, backgroundColor:document.body.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff'}).then(c => { 
+        const a = document.createElement('a'); a.download = `타일산출서_${Date.now()}.png`;
+        a.href = c.toDataURL(); a.click(); 
+    });
+}
+
+function shareResult(id) {
+    const el = document.getElementById(id);
+    if(!el) return;
+    html2canvas(el, {scale:2, backgroundColor:document.body.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff'}).then(c => {
+        c.toBlob(blob => {
+            const f = new File([blob], 'result.png', {type:'image/png'});
+            if(navigator.share && navigator.canShare({files:[f]})) {
+                navigator.share({files:[f], title:'타일 물량 산출서'});
+            } else {
+                alert('공유 기능을 지원하지 않는 브라우저입니다. 이미지를 저장해주세요.');
+            }
+        });
+    });
 }
 </script>
 </body>

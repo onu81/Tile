@@ -13,9 +13,9 @@ android {
         applicationId = "com.junhwi.tilecalc"
         minSdk = 24
         targetSdk = 35
-        // 광고 ID 권한 추가 및 재배포를 위해 버전을 15로 올립니다.
-        versionCode = 15
-        versionName = "2.4"
+        // 배포를 위해 versionCode와 versionName을 업데이트합니다. (HTML v6.2 반영)
+        versionCode = 16
+        versionName = "6.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
