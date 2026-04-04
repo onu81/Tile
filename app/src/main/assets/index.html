@@ -2,90 +2,68 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>타일 계산기 v6.2 (Onu Standard UI)</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=yes"/>
+<title>타일 계산기 v7.0 (현장 맞춤형)</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <style>
-    /* Onu 플랫폼 상용화 표준 디자인 (Cobalt Blue & Cool Gray) */
     :root {
-        --primary: #2563eb; /* 코발트 블루 */
+        --primary: #2563eb;
         --primary-hover: #1d4ed8;
-        --bg: #f1f5f9; /* 쿨 그레이 */
+        --bg: #f1f5f9;
         --card: #ffffff;
         --text: #0f172a;
         --text-muted: #64748b;
         --input-bg: #f8fafc;
         --border: #cbd5e1;
-        --nav-bg: rgba(255, 255, 255, 0.95);
+        --nav-bg: rgba(255,255,255,0.95);
         --error: #ef4444;
         --success: #10b981;
-        --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.05);
-        --shadow-md: 0 4px 12px rgba(15, 23, 42, 0.05);
+        --shadow-sm: 0 1px 3px rgba(15,23,42,0.05);
+        --shadow-md: 0 4px 12px rgba(15,23,42,0.05);
     }
     [data-theme="dark"] {
-        --bg: #0f172a; 
+        --bg: #0f172a;
         --card: #1e293b;
         --text: #f8fafc;
         --text-muted: #94a3b8;
         --input-bg: #0f172a;
         --border: #334155;
-        --nav-bg: rgba(30, 41, 59, 0.95);
-        --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.2);
+        --nav-bg: rgba(30,41,59,0.95);
     }
-    
-    body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; color: var(--text); transition: background 0.3s ease, color 0.3s ease; display: flex; justify-content: center; }
-    .container { width: 100%; max-width: 480px; min-height: 100vh; position: relative; padding-bottom: 30px; }
-    
-    /* 네비게이션 */
-    .tab-header { display: flex; background: var(--nav-bg); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); border-bottom: 1px solid var(--border); }
-    .tab-btn { flex: 1; padding: 16px 0; border: none; background: transparent; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; transition: all 0.2s; position: relative; }
-    .tab-btn::after { content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background: var(--primary); transition: width 0.3s ease; border-radius: 3px 3px 0 0; }
+    body { font-family: -apple-system, sans-serif; background: var(--bg); margin: 0; color: var(--text); transition: background 0.3s; display: flex; justify-content: center; }
+    .container { width: 100%; max-width: 480px; min-height: 100vh; padding-bottom: 30px; }
+    .tab-header { display: flex; background: var(--nav-bg); backdrop-filter: blur(8px); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+    .tab-btn { flex: 1; padding: 16px 0; border: none; background: transparent; font-size: 14px; font-weight: 600; color: var(--text-muted); cursor: pointer; position: relative; }
+    .tab-btn::after { content: ''; position: absolute; bottom: -1px; left: 50%; transform: translateX(-50%); width: 0; height: 3px; background: var(--primary); transition: width 0.3s; border-radius: 3px 3px 0 0; }
     .tab-btn.active { color: var(--primary); font-weight: 700; }
     .tab-btn.active::after { width: 100%; }
-
-    .tab-content { display: none; padding: 20px 15px; animation: fadeIn 0.2s ease-out; }
+    .tab-content { display: none; padding: 20px 15px; animation: fadeIn 0.2s; }
     .tab-content.active { display: block; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(3px); } to { opacity: 1; transform: translateY(0); } }
-
-    /* 카드 UI */
+    @keyframes fadeIn { from { opacity:0; transform:translateY(3px); } to { opacity:1; transform:translateY(0); } }
     .card { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 16px; box-shadow: var(--shadow-sm); border: 1px solid var(--border); }
-    h3 { margin: 0 0 14px 0; font-size: 14px; font-weight: 700; color: var(--text); display: flex; align-items: center; justify-content: space-between; letter-spacing: -0.3px; }
-    
-    /* 입력창 */
-    input, select { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; font-size: 13px; width: 100%; box-sizing: border-box; transition: all 0.2s ease; }
-    input::placeholder { color: #94a3b8; }
-    input:focus { outline: none; background: var(--card); border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15); }
-    
+    h3 { margin: 0 0 14px 0; font-size: 14px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+    input, select { background: var(--input-bg); color: var(--text); border: 1px solid var(--border); border-radius: 8px; padding: 10px 12px; font-size: 13px; width: 100%; box-sizing: border-box; transition: all 0.2s; }
+    input:focus { outline: none; background: var(--card); border-color: var(--primary); box-shadow: 0 0 0 3px rgba(37,99,235,0.15); }
     .area-grid { display: grid; grid-template-columns: 1fr; gap: 12px; }
-    .area-block { position: relative; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--input-bg); transition: border-color 0.2s; }
-    .area-block:hover { border-color: #94a3b8; }
-    .remove-btn { position: absolute; top: -8px; right: -8px; background: var(--error); color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; z-index: 10; font-weight: bold; box-shadow: 0 2px 6px rgba(239, 68, 68, 0.3); transition: transform 0.2s; }
+    .area-block { position: relative; padding: 14px; border: 1px solid var(--border); border-radius: 10px; background: var(--input-bg); }
+    .remove-btn { position: absolute; top: -8px; right: -8px; background: var(--error); color: white; border: none; width: 24px; height: 24px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; box-shadow: 0 2px 6px rgba(239,68,68,0.3); }
     .remove-btn:hover { transform: scale(1.1); }
-    
-    .input-row { display: flex; gap: 8px; margin-top: 8px; }
-    
-    /* 메인 버튼 */
-    .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; font-weight: 700; border-radius: 10px; cursor: pointer; margin-top: 12px; font-size: 15px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(37, 99, 235, 0.2); letter-spacing: -0.3px; }
-    .btn-main:hover { background: var(--primary-hover); transform: translateY(-1px); }
+    .input-row { display: flex; gap: 12px; margin-top: 8px; }
+    .input-field { flex: 1; }
+    .input-field label { display: block; font-size: 11px; color: var(--text-muted); margin-bottom: 4px; font-weight: 500; }
+    .btn-main { width: 100%; background: var(--primary); color: white; border: none; padding: 16px; font-weight: 700; border-radius: 10px; cursor: pointer; margin-top: 12px; font-size: 15px; transition: all 0.2s; box-shadow: 0 4px 10px rgba(37,99,235,0.2); }
     .btn-main:active { transform: translateY(1px); }
-    .btn-sub { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; flex: 1; font-size: 13px; font-weight: 600; text-align: center; transition: all 0.2s; box-shadow: var(--shadow-sm); }
-    .btn-sub:hover { background: var(--bg); }
-
-    /* 결과 및 기록 */
-    .doc-preview { background: var(--card); padding: 20px; border-radius: 10px; font-size: 13px; color: var(--text); line-height: 1.6; border: 1px solid var(--border); }
-    .summary-stats { display: flex; justify-content: space-around; padding: 16px; background: var(--primary); color: white; border-radius: 10px; margin: 16px 0; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.2); }
-    .stat-item { text-align: center; }
-    .stat-item div:first-child { font-size: 11px; opacity: 0.85; margin-bottom: 4px; }
+    .btn-sub { background: var(--card); color: var(--text); border: 1px solid var(--border); padding: 12px; border-radius: 8px; cursor: pointer; flex: 1; font-size: 13px; font-weight: 600; text-align: center; }
+    .doc-preview { background: var(--card); padding: 20px; border-radius: 10px; font-size: 13px; line-height: 1.6; border: 1px solid var(--border); }
+    .summary-stats { display: flex; justify-content: space-around; padding: 16px; background: var(--primary); color: white; border-radius: 10px; margin: 16px 0; }
     .stat-value { font-size: 20px; font-weight: 800; }
-    
-    .history-item { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; background: var(--card); overflow: hidden; box-shadow: var(--shadow-sm); }
+    .history-item { border: 1px solid var(--border); border-radius: 12px; margin-bottom: 14px; background: var(--card); overflow: hidden; }
     .history-header { padding: 18px; display: flex; justify-content: space-between; align-items: center; }
-    
-    /* 프리셋 도구 */
-    .preset-list { display: grid; grid-template-columns: 1fr; gap: 8px; }
-    .preset-item { padding: 14px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; align-items: center; transition: all 0.2s; background: var(--card); }
-    .preset-item:hover { background: var(--input-bg); border-color: var(--primary); color: var(--primary); }
-    .error-msg { color: var(--error); font-size: 12px; margin-top: 8px; display: none; text-align: center; font-weight: 500; }
+    .preset-list { display: flex; flex-direction: column; gap: 8px; }
+    .preset-item { padding: 14px; border: 1px solid var(--border); border-radius: 10px; cursor: pointer; display: flex; justify-content: space-between; background: var(--card); }
+    .error-msg { color: var(--error); font-size: 12px; margin-top: 8px; display: none; text-align: center; }
+    .toast-guide { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--primary); color: white; padding: 10px 16px; border-radius: 40px; font-size: 12px; z-index: 200; box-shadow: 0 4px 12px rgba(0,0,0,0.2); animation: fadeOut 3s forwards; pointer-events: none; }
+    @keyframes fadeOut { 0% { opacity: 1; } 70% { opacity: 1; } 100% { opacity: 0; visibility: hidden; } }
 </style>
 </head>
 <body data-theme="light">
@@ -98,118 +76,149 @@
 
     <div id="calcTab" class="tab-content active">
         <div class="card">
-            <h3 style="color: var(--text);">프로젝트 현장명</h3>
-            <input type="text" id="projectName" placeholder="예: 강남 래미안 거실 바닥" oninput="saveTempData()">
+            <h3>프로젝트 현장명</h3>
+            <input type="text" id="projectName" placeholder="예: 강남 래미안 거실 바닥" oninput="saveTempData(); debouncedCalculate()">
         </div>
         <div class="card">
-            <h3 style="color: var(--text);">시공 면적 (<span class="unit-label-area">m</span>)
-                <button onclick="addArea()" style="padding:6px 12px; background:var(--text); color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px; font-weight:600;">+ 면적 추가</button>
+            <h3>시공 면적 (<span class="unit-label-area">m</span>)
+                <button onclick="addArea()" style="padding:6px 12px; background:var(--text); color:white; border:none; border-radius:6px; cursor:pointer; font-size:12px;">+ 면적 추가</button>
             </h3>
             <div id="areas" class="area-grid"></div>
         </div>
-        
-        <div id="validationError" class="error-msg">입력값을 다시 확인해주세요. (가로/세로 필수)</div>
-        <button class="btn-main" onclick="calculate()">물량 산출 및 기록 저장</button>
+        <div id="validationError" class="error-msg">가로, 세로, 타일 가로/세로를 모두 입력해주세요.</div>
+        <button class="btn-main" onclick="calculateAndSave()">물량 산출 및 기록 저장</button>
 
-        <div id="resultSection" style="display:none; margin-top:24px;">
-            <div id="documentSection" class="doc-preview"></div>
+        <div id="resultSection" style="margin-top:24px;">
+            <div id="documentSection" class="doc-preview" style="text-align:center; color:var(--text-muted);">면적과 타일 규격을 입력하면 자동으로 물량이 계산됩니다.</div>
             <div style="display:flex; gap:10px; margin-top:12px;">
-                <button class="btn-sub" style="background:var(--primary); color:white; border:none;" onclick="saveImage('documentSection')">PNG 다운로드</button>
-                <button class="btn-sub" onclick="shareResult('documentSection')">결과 공유하기</button>
+                <button class="btn-sub" style="background:var(--success); color:white; border:none;" onclick="saveImage('documentSection')">PNG 저장</button>
+                <button class="btn-sub" onclick="shareResult('documentSection')">공유하기</button>
             </div>
         </div>
     </div>
 
     <div id="historyTab" class="tab-content">
         <div id="historyList"></div>
-        <button class="btn-sub" style="width:100%; color:var(--error); border-color:var(--error); background:transparent; margin-top:20px; box-shadow:none;" onclick="clearHistory()">모든 기록 삭제</button>
+        <button class="btn-sub" style="width:100%; color:var(--error); border-color:var(--error); background:transparent; margin-top:20px;" onclick="clearHistory()">모든 기록 삭제</button>
     </div>
 
     <div id="configTab" class="tab-content">
-        <div class="card">
-            <h3>🌍 글로벌 단위 시스템</h3>
+        <div class="card"><h3>🌍 단위 시스템</h3>
             <div style="display:flex; gap:10px;">
-                <button class="btn-sub" id="btnMetric" onclick="setUnitSystem('metric')" style="background:var(--primary); color:white; border-color:var(--primary);">Metric (m/mm)</button>
+                <button class="btn-sub" id="btnMetric" onclick="setUnitSystem('metric')" style="background:var(--primary); color:white;">Metric (m/mm)</button>
                 <button class="btn-sub" id="btnImperial" onclick="setUnitSystem('imperial')">Imperial (ft/in)</button>
             </div>
+            <p style="font-size:11px; color:var(--text-muted); margin-top:12px;">※ 시공 면적: m/ft, 타일 크기: mm/in (전문가용)</p>
         </div>
-
-        <div class="card">
-            <h3>📌 빠른 규격 프리셋</h3>
-            <div id="presetList" class="preset-list"></div>
-        </div>
-
-        <div class="card">
-            <h3>📦 자재 기본 설정</h3>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px;">
-                <span id="labelBoxArea" style="font-weight:500; font-size:13px;">박스당 면적(m²)</span>
-                <input type="number" step="0.01" id="boxArea" value="1.44" style="width:120px; text-align:right;" oninput="saveTempData()">
+        <div class="card"><h3>📌 빠른 규격 프리셋</h3><div id="presetList" class="preset-list"></div></div>
+        <div class="card"><h3>📦 자재 기본 설정</h3>
+            <div style="display:flex; justify-content:space-between; margin-bottom:12px;">
+                <span id="labelBoxArea">박스당 면적(m²)</span>
+                <input type="number" step="0.01" id="boxArea" value="1.44" style="width:120px; text-align:right;" oninput="saveTempData(); debouncedCalculate()">
             </div>
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-                <span style="font-weight:500; font-size:13px;">기본 로스율(%)</span>
-                <input type="number" id="globalLoss" value="5" style="width:120px; text-align:right;" oninput="saveTempData()">
+            <div style="display:flex; justify-content:space-between;">
+                <span>기본 로스율(%)</span>
+                <input type="number" id="globalLoss" value="5" style="width:120px; text-align:right;" oninput="saveTempData(); debouncedCalculate()">
             </div>
         </div>
-
-        <div class="card">
-            <h3>🎨 플랫폼 디스플레이</h3>
-            <button class="btn-sub" style="width:100%; background:var(--text); color:var(--card);" onclick="toggleTheme()">🌓 다크/라이트 모드 전환</button>
+        <div class="card"><h3>🎨 디스플레이</h3>
+            <button class="btn-sub" style="width:100%;" onclick="toggleTheme()">🌓 다크/라이트 모드</button>
         </div>
     </div>
 </div>
 
 <script>
-// --- 코어 상태 변수 ---
+// --- 상태 변수 ---
 let currentUnit = 'metric';
 let currentTileW = 600, currentTileH = 600;
+let calcTimeout = null;
 
 window.onload = () => {
     const savedTheme = localStorage.getItem('onu_platform_theme');
     if(savedTheme) document.body.setAttribute('data-theme', savedTheme);
     loadTempData();
     renderPresets();
+    // 첫 사용자 가이드 (단위 분리 설명 포함)
+    if (!localStorage.getItem('tile_v7_guide')) {
+        showToast('📐 시공 면적은 m(ft), 타일 크기는 mm(in)로 입력하세요. 설정에서 단위계 변경 가능');
+        localStorage.setItem('tile_v7_guide', 'true');
+    }
 };
 
-function switchTab(tabId) {
-    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
-    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById(tabId).classList.add('active');
-    document.querySelector(`button[onclick*="${tabId}"]`).classList.add('active');
-    if(tabId === 'historyTab') renderHistory();
+function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-guide';
+    toast.innerText = msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
 }
 
-function setUnitSystem(unit) {
-    currentUnit = unit;
-    document.getElementById('btnMetric').style.background = (unit === 'metric') ? 'var(--primary)' : 'var(--card)';
-    document.getElementById('btnMetric').style.color = (unit === 'metric') ? 'white' : 'var(--text)';
-    document.getElementById('btnMetric').style.borderColor = (unit === 'metric') ? 'var(--primary)' : 'var(--border)';
-    
-    document.getElementById('btnImperial').style.background = (unit === 'imperial') ? 'var(--primary)' : 'var(--card)';
-    document.getElementById('btnImperial').style.color = (unit === 'imperial') ? 'white' : 'var(--text)';
-    document.getElementById('btnImperial').style.borderColor = (unit === 'imperial') ? 'var(--primary)' : 'var(--border)';
-    
-    document.querySelectorAll('.unit-label-area').forEach(el => el.innerText = (unit === 'metric' ? 'm' : 'ft'));
-    document.getElementById('labelBoxArea').innerText = (unit === 'metric' ? '박스당 면적(m²)' : '박스당 면적(sq.ft)');
-    
-    const boxIn = document.getElementById('boxArea');
-    if(unit === 'metric' && parseFloat(boxIn.value) > 10) boxIn.value = 1.44;
-    else if(unit === 'imperial' && parseFloat(boxIn.value) < 10) boxIn.value = 15.5;
+// 디바운스 실시간 계산
+function debouncedCalculate() {
+    if (calcTimeout) clearTimeout(calcTimeout);
+    calcTimeout = setTimeout(() => calculate(), 500);
+}
 
+// 단위 전환 시 모든 입력값 변환
+function setUnitSystem(unit) {
+    if (currentUnit === unit) return;
+    convertAllValues(currentUnit, unit);
+    currentUnit = unit;
+    // UI 업데이트
+    document.getElementById('btnMetric').style.background = unit === 'metric' ? 'var(--primary)' : 'var(--card)';
+    document.getElementById('btnMetric').style.color = unit === 'metric' ? 'white' : 'var(--text)';
+    document.getElementById('btnImperial').style.background = unit === 'imperial' ? 'var(--primary)' : 'var(--card)';
+    document.getElementById('btnImperial').style.color = unit === 'imperial' ? 'white' : 'var(--text)';
+    document.querySelectorAll('.unit-label-area').forEach(el => el.innerText = unit === 'metric' ? 'm' : 'ft');
+    document.getElementById('labelBoxArea').innerText = unit === 'metric' ? '박스당 면적(m²)' : '박스당 면적(sq.ft)';
+    let boxIn = document.getElementById('boxArea');
+    if (unit === 'metric' && parseFloat(boxIn.value) > 10) boxIn.value = 1.44;
+    else if (unit === 'imperial' && parseFloat(boxIn.value) < 10) boxIn.value = 15.5;
     renderPresets();
     updateAreaPlaceholders();
     saveTempData();
+    calculate(); // 재계산
 }
 
+// 모든 블록의 값 변환 (metric <-> imperial)
+function convertAllValues(from, to) {
+    const isToMetric = (to === 'metric');
+    document.querySelectorAll('.area-block').forEach(block => {
+        const inputs = block.querySelectorAll('input');
+        if (inputs.length >= 5) {
+            // 가로, 세로 (m <-> ft)
+            let w = parseFloat(inputs[1].value);
+            let h = parseFloat(inputs[2].value);
+            if (!isNaN(w) && w !== 0) inputs[1].value = isToMetric ? (w * 0.3048).toFixed(2) : (w / 0.3048).toFixed(2);
+            if (!isNaN(h) && h !== 0) inputs[2].value = isToMetric ? (h * 0.3048).toFixed(2) : (h / 0.3048).toFixed(2);
+            // 타일 W, H (mm <-> in)
+            let tw = parseFloat(inputs[3].value);
+            let th = parseFloat(inputs[4].value);
+            if (!isNaN(tw) && tw !== 0) inputs[3].value = isToMetric ? (tw * 25.4).toFixed(0) : (tw / 25.4).toFixed(1);
+            if (!isNaN(th) && th !== 0) inputs[4].value = isToMetric ? (th * 25.4).toFixed(0) : (th / 25.4).toFixed(1);
+        }
+    });
+    // currentTileW/H 전역값도 변환
+    if (from === 'metric' && to === 'imperial') {
+        currentTileW = Math.round(currentTileW / 25.4);
+        currentTileH = Math.round(currentTileH / 25.4);
+    } else if (from === 'imperial' && to === 'metric') {
+        currentTileW = Math.round(currentTileW * 25.4);
+        currentTileH = Math.round(currentTileH * 25.4);
+    }
+}
+
+// 플레이스홀더 업데이트 (고정 라벨이 있어서 단위만 변경)
 function updateAreaPlaceholders() {
     const unitR = currentUnit === 'metric' ? 'm' : 'ft';
     const unitT = currentUnit === 'metric' ? 'mm' : 'in';
-    document.querySelectorAll('.area-block').forEach(b => {
-        const ins = b.querySelectorAll('input');
-        if(ins.length >= 5) {
-            ins[1].placeholder = `가로(${unitR})`;
-            ins[2].placeholder = `세로(${unitR})`;
-            ins[3].placeholder = `W(${unitT})`;
-            ins[4].placeholder = `H(${unitT})`;
+    document.querySelectorAll('.area-block').forEach(block => {
+        const labels = block.querySelectorAll('.input-field label');
+        if (labels.length >= 4) {
+            labels[0].innerHTML = `가로 (${unitR})`;
+            labels[1].innerHTML = `세로 (${unitR})`;
+            labels[2].innerHTML = `타일 너비 (${unitT})`;
+            labels[3].innerHTML = `타일 높이 (${unitT})`;
         }
     });
 }
@@ -217,130 +226,133 @@ function updateAreaPlaceholders() {
 function renderPresets() {
     const list = document.getElementById('presetList');
     const items = currentUnit === 'metric' ? 
-        [{w:600, h:600, a:1.44, n:'600 각 바닥 표준'}, {w:300, h:600, a:1.44, n:'300x600 벽타일'}, {w:300, h:300, a:1.44, n:'300 각 욕실바닥'}] :
-        [{w:12, h:12, a:15, n:'12" Standard'}, {w:24, h:24, a:16, n:'24" Large'}];
-    
-    list.innerHTML = items.map(p => `
-        <div class="preset-item" onclick="applyPreset(${p.w}, ${p.h}, ${p.a})">
-            <span style="font-weight:600;">${p.n}</span>
-            <small style="color:var(--text-muted);">${p.w}x${p.h} / ${p.a}${currentUnit==='metric'?'m²':'sq.ft'}</small>
-        </div>`).join('');
+        [{w:600, h:600, a:1.44, n:'600x600 바닥'}, {w:300, h:600, a:1.44, n:'300x600 벽타일'}, {w:300, h:300, a:1.44, n:'300x300 욕실'}] :
+        [{w:12, h:12, a:15, n:'12" x 12"'}, {w:24, h:24, a:16, n:'24" x 24" Large'}];
+    list.innerHTML = items.map(p => `<div class="preset-item" onclick="applyPreset(${p.w}, ${p.h}, ${p.a})"><span>${p.n}</span><small>${p.w}x${p.h} / ${p.a}${currentUnit==='metric'?'m²':'sq.ft'}</small></div>`).join('');
 }
 
 function applyPreset(w, h, a) {
     currentTileW = w; currentTileH = h;
     document.getElementById('boxArea').value = a;
     document.querySelectorAll('.area-block').forEach(b => {
-        const ins = b.querySelectorAll('input');
-        if(ins.length >= 5) { ins[3].value = w; ins[4].value = h; }
+        const inputs = b.querySelectorAll('input');
+        if(inputs.length >= 5) { inputs[3].value = w; inputs[4].value = h; }
     });
     saveTempData();
-    alert(`[${w}x${h}] 규격이 전체 면적에 적용되었습니다.`);
+    calculate();
+    showToast(`${w}x${h} 규격 적용됨`);
 }
 
+// 새 면적 블록 추가 (고정 라벨 포함)
 function addArea(t="", w="", h="", tw="", th="", l="") {
     const id = `block_${Date.now()}`;
     const unitR = currentUnit === 'metric' ? 'm' : 'ft';
     const unitT = currentUnit === 'metric' ? 'mm' : 'in';
-    
     const html = `
     <div class="area-block" id="${id}">
-        <button class="remove-btn" onclick="document.getElementById('${id}').remove();saveTempData();">×</button>
-        <input type="text" placeholder="공간명 (예: 안방 욕실)" value="${t}" oninput="saveTempData()" style="font-weight:700; border:none; border-bottom:1px solid var(--border); background:transparent; margin-bottom:10px; padding:6px 4px; border-radius:0;">
+        <button class="remove-btn" onclick="document.getElementById('${id}').remove(); saveTempData(); calculate();">×</button>
+        <input type="text" placeholder="공간명 (예: 안방)" value="${t}" oninput="saveTempData(); debouncedCalculate()" style="font-weight:700; border:none; border-bottom:1px solid var(--border); background:transparent; margin-bottom:12px; padding:6px 4px; border-radius:0; width:100%;">
         <div class="input-row">
-            <input type="number" step="0.1" placeholder="가로(${unitR})" value="${w}" oninput="saveTempData()">
-            <input type="number" step="0.1" placeholder="세로(${unitR})" value="${h}" oninput="saveTempData()">
+            <div class="input-field"><label>가로 (${unitR})</label><input type="number" step="0.1" value="${w}" oninput="saveTempData(); debouncedCalculate()"></div>
+            <div class="input-field"><label>세로 (${unitR})</label><input type="number" step="0.1" value="${h}" oninput="saveTempData(); debouncedCalculate()"></div>
         </div>
         <div class="input-row">
-            <input type="number" placeholder="W(${unitT})" value="${tw || currentTileW}" oninput="saveTempData()">
-            <input type="number" placeholder="H(${unitT})" value="${th || currentTileH}" oninput="saveTempData()">
+            <div class="input-field"><label>타일 너비 (${unitT})</label><input type="number" value="${tw || currentTileW}" oninput="saveTempData(); debouncedCalculate()"></div>
+            <div class="input-field"><label>타일 높이 (${unitT})</label><input type="number" value="${th || currentTileH}" oninput="saveTempData(); debouncedCalculate()"></div>
         </div>
-        <input type="number" placeholder="개별 로스(%)" value="${l}" oninput="saveTempData()" style="margin-top:8px;">
+        <div class="input-field"><label>개별 로스 (%)</label><input type="number" step="0.1" value="${l}" oninput="saveTempData(); debouncedCalculate()" style="margin-top:4px;"></div>
     </div>`;
     document.getElementById('areas').insertAdjacentHTML('beforeend', html);
     updateAreaPlaceholders();
 }
 
+// 실시간 계산 (결과 영역 업데이트)
 function calculate() {
     const blocks = document.querySelectorAll('.area-block');
     const errDiv = document.getElementById('validationError');
-    
-    if(blocks.length === 0) { errDiv.style.display = 'block'; return; }
-
+    if(blocks.length === 0) {
+        document.getElementById('documentSection').innerHTML = '<div style="text-align:center; color:var(--text-muted);">➕ 면적을 추가해주세요.</div>';
+        errDiv.style.display = 'none';
+        return;
+    }
     let totalAreaM2 = 0, summary = [], isValid = false;
     const globalBoxArea = parseFloat(document.getElementById('boxArea').value) || 1.44;
     const globalLoss = parseFloat(document.getElementById('globalLoss').value) || 0;
-
     blocks.forEach(b => {
-        const ins = b.querySelectorAll('input');
-        const name = ins[0].value || "시공면";
-        const w = parseFloat(ins[1].value) || 0;
-        const h = parseFloat(ins[2].value) || 0;
-        const tw = parseFloat(ins[3].value) || 0;
-        const th = parseFloat(ins[4].value) || 0;
-        
-        const rawLoss = parseFloat(ins[5].value);
+        const inputs = b.querySelectorAll('input');
+        const name = inputs[0].value || "시공면";
+        const w = parseFloat(inputs[1].value) || 0;
+        const h = parseFloat(inputs[2].value) || 0;
+        const tw = parseFloat(inputs[3].value) || 0;
+        const th = parseFloat(inputs[4].value) || 0;
+        const rawLoss = parseFloat(inputs[5].value);
         const l = isNaN(rawLoss) ? globalLoss : rawLoss;
-
         if(w > 0 && h > 0 && tw > 0 && th > 0) {
             isValid = true;
             const wM = (currentUnit === 'imperial') ? w * 0.3048 : w;
             const hM = (currentUnit === 'imperial') ? h * 0.3048 : h;
             const twM = (currentUnit === 'imperial') ? tw * 0.0254 : tw / 1000;
             const thM = (currentUnit === 'imperial') ? th * 0.0254 : th / 1000;
-            
             const areaM2 = wM * hM;
             const tileAreaM2 = twM * thM;
             const pcs = Math.ceil((areaM2 / tileAreaM2) * (1 + l/100));
-            
             totalAreaM2 += areaM2;
             summary.push({name, area: areaM2, pcs, l, tw, th});
         }
     });
-
-    if(!isValid) { errDiv.style.display = 'block'; return; }
+    if(!isValid) {
+        errDiv.style.display = 'block';
+        document.getElementById('documentSection').innerHTML = '<div style="text-align:center; color:var(--error);">❌ 가로, 세로, 타일 규격을 모두 입력하세요</div>';
+        return;
+    }
     errDiv.style.display = 'none';
-
     const boxAreaM2 = (currentUnit === 'imperial') ? globalBoxArea * 0.092903 : globalBoxArea;
     const totalBoxes = Math.ceil((totalAreaM2 * (1 + globalLoss/100)) / boxAreaM2);
-    
     const areaDisp = (currentUnit === 'metric') ? `${totalAreaM2.toFixed(2)}m²` : `${(totalAreaM2/0.092903).toFixed(2)}sq.ft`;
     const projName = document.getElementById('projectName').value || '미지정 프로젝트';
     const now = new Date().toLocaleString('ko-KR');
-
     const docHtml = `
-        <div style="text-align:center; border-bottom:2px solid var(--border); padding-bottom:12px; margin-bottom:16px;">
-            <strong style="font-size:15px; color:var(--text);">타일 물량 산출서</strong>
-        </div>
-        <div style="margin-bottom:12px; font-size:14px;"><strong>현장명: ${projName}</strong></div>
+        <div style="text-align:center; border-bottom:2px solid var(--border); padding-bottom:12px; margin-bottom:16px;"><strong>타일 물량 산출서</strong></div>
+        <div><strong>현장명: ${projName}</strong></div>
         <div class="summary-stats">
-            <div class="stat-item"><div>총 시공 면적</div><div class="stat-value">${areaDisp}</div></div>
-            <div class="stat-item"><div>최종 필요 물량</div><div class="stat-value">${totalBoxes} BOX</div></div>
+            <div><div>총 시공 면적</div><div class="stat-value">${areaDisp}</div></div>
+            <div><div>필요 물량</div><div class="stat-value">${totalBoxes} BOX</div></div>
         </div>
         <div style="border-top:1px solid var(--border); padding-top:16px;">
-            ${summary.map(s => `
-                <div style="margin-bottom:8px; display:flex; justify-content:space-between; align-items:center;">
-                    <span>• <strong>${s.name}</strong></span>
-                    <span><strong style="color:var(--primary); font-size:14px;">${s.pcs}장</strong> <span style="color:var(--text-muted); font-size:11px;">(${s.tw}x${s.th}, 로스 ${s.l}%)</span></span>
-                </div>
-            `).join('')}
+            ${summary.map(s => `<div style="display:flex; justify-content:space-between; margin-bottom:8px;"><span>• ${s.name}</span><span><strong>${s.pcs}장</strong> (${s.tw}x${s.th}, 로스 ${s.l}%)</span></div>`).join('')}
         </div>
-        <div style="margin-top:20px; padding-top:12px; border-top:1px dashed var(--border); font-size:11px; color:var(--text-muted); text-align:right;">
-            산출일시: ${now} | 모드: ${currentUnit.toUpperCase()}
-        </div>
+        <div style="margin-top:20px; text-align:right; font-size:11px; color:var(--text-muted);">${now} | ${currentUnit.toUpperCase()}</div>
     `;
-
     document.getElementById('documentSection').innerHTML = docHtml;
-    document.getElementById('resultSection').style.display = 'block';
-    document.getElementById('resultSection').scrollIntoView({behavior:'smooth'});
-    
-    saveToHistory(projName, totalBoxes, areaDisp, docHtml);
 }
 
+// 저장 버튼 클릭 시 기록 저장
+function calculateAndSave() {
+    calculate();
+    const blocks = document.querySelectorAll('.area-block');
+    let hasValid = false;
+    blocks.forEach(b => {
+        const inputs = b.querySelectorAll('input');
+        if(parseFloat(inputs[1].value) > 0 && parseFloat(inputs[2].value) > 0 && parseFloat(inputs[3].value) > 0 && parseFloat(inputs[4].value) > 0) hasValid = true;
+    });
+    if(!hasValid) {
+        alert('먼저 유효한 면적과 타일 규격을 입력해주세요.');
+        return;
+    }
+    const totalBoxesElem = document.querySelector('#documentSection .stat-value:last-child');
+    const boxes = totalBoxesElem ? parseInt(totalBoxesElem.innerText) : 0;
+    const areaDisp = document.querySelector('#documentSection .stat-value:first-child')?.innerText || '';
+    const projName = document.getElementById('projectName').value || '미지정';
+    const docHtml = document.getElementById('documentSection').innerHTML;
+    saveToHistory(projName, boxes, areaDisp, docHtml);
+    alert('기록이 저장되었습니다.');
+}
+
+// 로컬스토리지 저장
 function saveTempData() {
     const data = {
         projectName: document.getElementById('projectName').value,
-        currentUnit, 
+        currentUnit,
         boxArea: document.getElementById('boxArea').value,
         globalLoss: document.getElementById('globalLoss').value,
         areas: Array.from(document.querySelectorAll('.area-block')).map(b => {
@@ -348,132 +360,119 @@ function saveTempData() {
             return {t:ins[0].value, w:ins[1].value, h:ins[2].value, tw:ins[3].value, th:ins[4].value, l:ins[5].value};
         })
     };
-    localStorage.setItem('tile_v6_temp', JSON.stringify(data));
+    localStorage.setItem('tile_v7_temp', JSON.stringify(data));
 }
 
+// 데이터 로드 (예제 포함)
 function loadTempData() {
-    const savedStr = localStorage.getItem('tile_v6_temp');
-    if(!savedStr) { addArea(); return; }
+    const savedStr = localStorage.getItem('tile_v7_temp');
+    if (!savedStr) {
+        // 최초 실행 시 예제 면적 2개 (거실, 주방)
+        addArea("거실", 4.5, 3.2, 600, 600, 5);
+        addArea("주방", 3.0, 2.5, 600, 600, 8);
+        saveTempData();
+        calculate();
+        return;
+    }
     try {
         const saved = JSON.parse(savedStr);
         document.getElementById('projectName').value = saved.projectName || "";
-        setUnitSystem(saved.currentUnit || 'metric');
+        if (saved.currentUnit && saved.currentUnit !== currentUnit) setUnitSystem(saved.currentUnit);
+        else setUnitSystem(currentUnit);
         document.getElementById('boxArea').value = saved.boxArea || 1.44;
         document.getElementById('globalLoss').value = saved.globalLoss || 5;
-        document.getElementById('areas').innerHTML = ""; 
-        if(saved.areas && saved.areas.length > 0) {
+        document.getElementById('areas').innerHTML = "";
+        if (saved.areas && saved.areas.length > 0) {
             saved.areas.forEach(a => addArea(a.t, a.w, a.h, a.tw, a.th, a.l));
-        } else { addArea(); }
-    } catch(e) { addArea(); }
+        } else {
+            addArea("거실", 4.5, 3.2, 600, 600, 5);
+            addArea("주방", 3.0, 2.5, 600, 600, 8);
+        }
+        calculate();
+    } catch(e) { 
+        addArea("거실", 4.5, 3.2, 600, 600, 5);
+        addArea("주방", 3.0, 2.5, 600, 600, 8);
+        calculate();
+    }
 }
 
+// 기록 저장
 function saveToHistory(projName, boxes, areaDisp, docHtml) {
-    const history = JSON.parse(localStorage.getItem('tile_v6_history') || '[]');
-    const rawData = JSON.parse(localStorage.getItem('tile_v6_temp') || '{}');
+    const history = JSON.parse(localStorage.getItem('tile_v7_history') || '[]');
+    const rawData = JSON.parse(localStorage.getItem('tile_v7_temp') || '{}');
     history.unshift({ projectName: projName, date: new Date().toLocaleDateString(), boxes, areaDisp, docHtml, rawData });
     if(history.length > 20) history.pop();
-    localStorage.setItem('tile_v6_history', JSON.stringify(history));
+    localStorage.setItem('tile_v7_history', JSON.stringify(history));
+    renderHistory();
 }
 
 function renderHistory() {
-    const history = JSON.parse(localStorage.getItem('tile_v6_history') || '[]');
+    const history = JSON.parse(localStorage.getItem('tile_v7_history') || '[]');
     const list = document.getElementById('historyList');
-    if(history.length === 0) { list.innerHTML = '<div style="text-align:center; padding:50px 0; color:var(--text-muted);">저장된 기록이 없습니다.</div>'; return; }
-    
-    list.innerHTML = history.map((h, i) => `
+    if(!history.length) { list.innerHTML = '<div style="text-align:center; padding:50px 0;">저장된 기록 없음</div>'; return; }
+    list.innerHTML = history.map((h,i) => `
         <div class="history-item">
-            <div class="history-header">
-                <div>
-                    <strong style="font-size:15px; color:var(--text);">${h.projectName}</strong><br>
-                    <small style="color:var(--text-muted);">${h.date} | ${h.areaDisp}</small>
-                </div>
-                <div style="text-align:right;">
-                    <span style="color:var(--primary); font-weight:800; font-size:18px;">${h.boxes} BOX</span>
-                </div>
-            </div>
-            <button class="btn-sub" id="toggleBtn_${i}" style="width:calc(100% - 32px); margin:0 16px 16px 16px; box-shadow:none; background:var(--bg);" onclick="toggleHistoryDetail(${i}, this)">상세보기</button>
-            <div class="history-body" id="hBody_${i}" style="display:none; padding:0 16px 16px 16px;">
-                <div class="doc-preview" style="padding:16px; margin-bottom:12px;">${h.docHtml}</div>
-                <div style="display:flex; gap:8px;">
-                    <button class="btn-sub" style="background:var(--primary); color:white; border:none;" onclick="loadHistory(${i})">불러오기</button>
-                    <button class="btn-sub" style="color:var(--error); border-color:var(--error); background:transparent;" onclick="deleteHistory(${i})">삭제</button>
-                </div>
-            </div>
+            <div class="history-header"><div><strong>${h.projectName}</strong><br><small>${h.date} | ${h.areaDisp}</small></div><div><span style="color:var(--primary); font-weight:800;">${h.boxes} BOX</span></div></div>
+            <button class="btn-sub" id="toggleBtn_${i}" style="width:calc(100% - 32px); margin:0 16px 16px;" onclick="toggleHistoryDetail(${i}, this)">상세보기</button>
+            <div id="hBody_${i}" style="display:none; padding:16px;"><div class="doc-preview">${h.docHtml}</div><div style="display:flex; gap:8px; margin-top:12px;"><button class="btn-sub" style="background:var(--primary); color:white;" onclick="loadHistory(${i})">불러오기</button><button class="btn-sub" style="color:var(--error);" onclick="deleteHistory(${i})">삭제</button></div></div>
         </div>`).join('');
 }
 
 function toggleHistoryDetail(index, btn) {
-    const detailDiv = document.getElementById(`hBody_${index}`);
-    if(detailDiv.style.display === 'none') {
-        detailDiv.style.display = 'block';
-        btn.innerText = '접기';
-        btn.style.background = 'var(--border)';
-    } else {
-        detailDiv.style.display = 'none';
-        btn.innerText = '상세보기';
-        btn.style.background = 'var(--bg)';
-    }
+    const div = document.getElementById(`hBody_${index}`);
+    if(div.style.display === 'none') { div.style.display = 'block'; btn.innerText = '접기'; }
+    else { div.style.display = 'none'; btn.innerText = '상세보기'; }
 }
-
 function loadHistory(i) {
-    const h = JSON.parse(localStorage.getItem('tile_v6_history'))[i];
-    if(h && h.rawData) {
-        localStorage.setItem('tile_v6_temp', JSON.stringify(h.rawData));
+    const h = JSON.parse(localStorage.getItem('tile_v7_history'))[i];
+    if(h?.rawData) {
+        localStorage.setItem('tile_v7_temp', JSON.stringify(h.rawData));
         loadTempData();
         switchTab('calcTab');
-        alert("이전 데이터를 성공적으로 불러왔습니다.");
+        alert('불러왔습니다.');
     }
 }
-
 function deleteHistory(i) {
-    if(confirm('이 기록을 삭제하시겠습니까?')) {
-        let h = JSON.parse(localStorage.getItem('tile_v6_history'));
-        h.splice(i, 1);
-        localStorage.setItem('tile_v6_history', JSON.stringify(h));
-        renderHistory();
-    }
+    if(confirm('삭제?')) { let h = JSON.parse(localStorage.getItem('tile_v7_history')); h.splice(i,1); localStorage.setItem('tile_v7_history', JSON.stringify(h)); renderHistory(); }
 }
-
-function clearHistory() { if(confirm('모든 기록을 삭제하시겠습니까?')) { localStorage.removeItem('tile_v6_history'); renderHistory(); } }
-
+function clearHistory() { if(confirm('전체 삭제?')) { localStorage.removeItem('tile_v7_history'); renderHistory(); } }
 function toggleTheme() {
     const newT = document.body.getAttribute('data-theme') === 'light' ? 'dark' : 'light';
     document.body.setAttribute('data-theme', newT);
     localStorage.setItem('onu_platform_theme', newT);
 }
-
 function saveImage(id) {
     const el = document.getElementById(id);
     if(!el) return;
-    html2canvas(el, {scale:2, backgroundColor:document.body.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff'}).then(c => { 
+    html2canvas(el, { scale:2, backgroundColor: getComputedStyle(document.body).getPropertyValue('--card').trim() || '#ffffff' }).then(c => {
         const dataUrl = c.toDataURL();
         if (window.Android && window.Android.saveImage) {
             window.Android.saveImage(dataUrl);
         } else {
-            const a = document.createElement('a'); a.download = `타일산출서_${Date.now()}.png`;
-            a.href = dataUrl; a.click(); 
+            let a = document.createElement('a'); a.download = `타일산출서_${Date.now()}.png`; a.href = dataUrl; a.click();
         }
     });
 }
-
 function shareResult(id) {
     const el = document.getElementById(id);
-    if(!el) return;
-    html2canvas(el, {scale:2, backgroundColor:document.body.getAttribute('data-theme') === 'dark' ? '#1e293b' : '#ffffff'}).then(c => {
+    html2canvas(el, { scale:2 }).then(c => {
         const dataUrl = c.toDataURL();
         if (window.Android && window.Android.shareImage) {
             window.Android.shareImage(dataUrl);
         } else {
-            c.toBlob(blob => {
-                const f = new File([blob], 'result.png', {type:'image/png'});
-                if(navigator.share && navigator.canShare({files:[f]})) {
-                    navigator.share({files:[f], title:'타일 물량 산출서'});
-                } else {
-                    alert('공유 기능을 지원하지 않는 브라우저입니다. 이미지를 저장해주세요.');
-                }
+            c.toBlob(blob => { 
+                if(navigator.share) navigator.share({ files: [new File([blob], 'result.png', {type:'image/png'})], title:'타일 물량' }); 
+                else alert('공유 지원 안 됨'); 
             });
         }
     });
+}
+function switchTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    document.querySelector(`button[onclick*="${tabId}"]`).classList.add('active');
+    if(tabId === 'historyTab') renderHistory();
 }
 </script>
 </body>

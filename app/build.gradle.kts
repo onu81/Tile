@@ -12,9 +12,9 @@ android {
         applicationId = "com.junhwi.tilecalc"
         minSdk = 24
         targetSdk = 35
-        // 중복 오류를 방지하기 위해 버전 코드를 17로 업데이트합니다.
-        versionCode = 17
-        versionName = "6.2.2"
+        // v7.0 배포를 위해 버전 정보를 업데이트합니다.
+        versionCode = 20
+        versionName = "7.0.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
